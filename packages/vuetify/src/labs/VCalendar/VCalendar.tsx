@@ -15,6 +15,8 @@ import { computed } from 'vue'
 import { chunkArray, genericComponent, getPrefixedEventHandlers, propsFactory, useRender } from '@/util'
 
 // Types
+import type { VCalendarIntervalSlots } from './VCalendarInterval'
+import type { VCalendarMonthDaySlots } from './VCalendarMonthDay'
 import type { CalendarDay } from '@/composables/calendar'
 
 export const makeVCalendarProps = propsFactory({
@@ -27,14 +29,10 @@ export const makeVCalendarProps = propsFactory({
 }, 'VCalender')
 
 export type VCalendarSlots = {
-  allDayContent: { day?: CalendarDay, events?: Array<any> }
-  allDayEvent: { day?: CalendarDay, event?: Record<string, unknown> }
-  dayBody: { day?: CalendarDay, events?: Array<any> }
   day: { day?: CalendarDay, events?: Array<any> }
-  event: { day?: CalendarDay, allDay: Boolean, event?: Record<string, unknown> }
   header: { title: string }
-  intervalDay: { day?: CalendarDay, dayIndex: Number, events?: Array<any> }
-}
+  intervalDay: { day?: CalendarDay, dayIndex: Number, showLabel: boolean, events?: Array<any> }
+} & VCalendarIntervalSlots & VCalendarMonthDaySlots
 
 export const VCalendar = genericComponent<VCalendarSlots>()({
   name: 'VCalendar',
@@ -168,6 +166,11 @@ export const VCalendar = genericComponent<VCalendarSlots>()({
                             day={ day }
                             title={ day ? adapter.format(day.date, 'dayOfMonth') : 'NaN' }
                             events={ props.events?.filter(e => adapter.isSameDay(day.date, e.start) || adapter.isSameDay(day.date, e.end)) }
+                            v-slots={{
+                              dayBody: slots.dayBody,
+                              event: slots.event,
+                              title: slots.title,
+                            }}
                           />
                         ))),
                     ]
@@ -182,13 +185,19 @@ export const VCalendar = genericComponent<VCalendarSlots>()({
                   ...calendarDayProps,
                   day,
                   dayIndex: i,
+                  showLabel: i === 0,
                   events: props.events?.filter(e => adapter.isSameDay(e.start, day.date) || adapter.isSameDay(e.end, day.date)),
                 }) : (
                   <VCalendarDay
                     { ...calendarDayProps }
                     day={ day }
-                    dayIndex={ i }
+                    showLabel={ i === 0 }
                     events={ props.events?.filter(e => adapter.isSameDay(e.start, day.date) || adapter.isSameDay(e.end, day.date)) }
+                    v-slots={{
+                      intervalEvent: slots.intervalEvent,
+                      intervalBody: slots.intervalBody,
+                      intervalFormat: slots.intervalFormat,
+                    }}
                   ></VCalendarDay>
                 )
               ))
@@ -198,6 +207,7 @@ export const VCalendar = genericComponent<VCalendarSlots>()({
               slots.intervalDay ? slots.intervalDay({
                 day: genDays([displayValue.value as Date], adapter.date() as Date)[0],
                 dayIndex: 0,
+                showLabel: true,
                 events: props.events?.filter(e =>
                   adapter.isSameDay(e.start, genDays([displayValue.value as Date], adapter.date() as Date)[0].date) ||
                   adapter.isSameDay(e.end, genDays([displayValue.value as Date], adapter.date() as Date)[0].date)
@@ -205,13 +215,19 @@ export const VCalendar = genericComponent<VCalendarSlots>()({
               }) : (
                 <VCalendarDay
                   { ...calendarDayProps }
-                  day={ genDays([model.value[0] as Date], adapter.date() as Date)[0] }
+                  showLabel
+                  day={ genDays([displayValue.value as Date], adapter.date() as Date)[0] }
                   events={
                     props.events?.filter(e =>
-                      adapter.isSameDay(e.start, genDays([model.value[0] as Date], adapter.date() as Date)[0].date) ||
-                      adapter.isSameDay(e.end, genDays([model.value[0] as Date], adapter.date() as Date)[0].date)
+                      adapter.isSameDay(e.start, genDays([displayValue.value as Date], adapter.date() as Date)[0].date) ||
+                      adapter.isSameDay(e.end, genDays([displayValue.value as Date], adapter.date() as Date)[0].date)
                     )
                   }
+                  v-slots={{
+                    intervalEvent: slots.intervalEvent,
+                    intervalBody: slots.intervalBody,
+                    intervalFormat: slots.intervalFormat,
+                  }}
                 ></VCalendarDay>
               )
             )}

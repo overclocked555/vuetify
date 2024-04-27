@@ -14,7 +14,6 @@ import type { CalendarDay } from '@/composables/calendar'
 
 export type VCalendarMonthDaySlots = {
   default: never
-  day: { day?: CalendarDay, events: Array<any> }
   dayBody: { day?: CalendarDay, events?: Array<any> }
   title: { title?: number | string }
   event: { day?: CalendarDay, allDay: boolean, event: Record<string, unknown> }
