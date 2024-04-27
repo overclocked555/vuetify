@@ -33,7 +33,7 @@ export type VCalendarIntervalSlots = {
     intervalHeight: number
   }
   intervalBody: { interval: CalendarDayInterval }
-  intervalFormat: { interval: any }
+  intervalFormat: { interval: CalendarDayInterval }
 }
 
 export const makeVCalendarIntervalProps = propsFactory({
