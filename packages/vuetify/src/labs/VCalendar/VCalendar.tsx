@@ -166,6 +166,7 @@ export const VCalendar = genericComponent<VCalendarSlots>()({
                             { ...calendarDayProps }
                             { ...getPrefixedEventHandlers(attrs, ':day', () => ({ day })) }
                             day={ day }
+                            title={ day ? adapter.format(day.date, 'dayOfMonth') : 'NaN' }
                             events={ props.events?.filter(e => adapter.isSameDay(day.date, e.start) || adapter.isSameDay(day.date, e.end)) }
                           />
                         ))),
