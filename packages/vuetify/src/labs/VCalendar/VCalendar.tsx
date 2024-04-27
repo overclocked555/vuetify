@@ -77,7 +77,7 @@ export const VCalendar = genericComponent<VCalendarSlots>()({
     }
 
     function onClickToday () {
-      model.value = [new Date()]
+      model.value = [adapter.date()]
     }
 
     const title = computed(() => {
@@ -205,22 +205,22 @@ export const VCalendar = genericComponent<VCalendarSlots>()({
 
             { props.viewMode === 'day' && (
               slots.intervalDay ? slots.intervalDay({
-                day: genDays([displayValue.value as Date], adapter.date() as Date)[0],
+                day: genDays([displayValue.value], adapter.date())[0],
                 dayIndex: 0,
                 showLabel: true,
                 events: props.events?.filter(e =>
-                  adapter.isSameDay(e.start, genDays([displayValue.value as Date], adapter.date() as Date)[0].date) ||
-                  adapter.isSameDay(e.end, genDays([displayValue.value as Date], adapter.date() as Date)[0].date)
+                  adapter.isSameDay(e.start, genDays([displayValue.value], adapter.date())[0].date) ||
+                  adapter.isSameDay(e.end, genDays([displayValue.value], adapter.date())[0].date)
                 ),
               }) : (
                 <VCalendarDay
                   { ...calendarDayProps }
                   showLabel
-                  day={ genDays([displayValue.value as Date], adapter.date() as Date)[0] }
+                  day={ genDays([displayValue.value], adapter.date())[0] }
                   events={
                     props.events?.filter(e =>
-                      adapter.isSameDay(e.start, genDays([displayValue.value as Date], adapter.date() as Date)[0].date) ||
-                      adapter.isSameDay(e.end, genDays([displayValue.value as Date], adapter.date() as Date)[0].date)
+                      adapter.isSameDay(e.start, genDays([displayValue.value], adapter.date())[0].date) ||
+                      adapter.isSameDay(e.end, genDays([displayValue.value], adapter.date())[0].date)
                     )
                   }
                   v-slots={{

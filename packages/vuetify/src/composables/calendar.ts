@@ -28,7 +28,7 @@ export interface CalendarProps {
 }
 
 export type CalendarDay = {
-  date: Date
+  date: unknown
   formatted: string
   isAdjacent: boolean
   isDisabled: boolean
@@ -105,7 +105,7 @@ export function useCalendar (props: CalendarProps) {
     v => adapter.getMonth(v)
   )
 
-  const weeksInMonth = computed<Date[][]>((): Date[][] => {
+  const weeksInMonth = computed<unknown[][]>((): unknown[][] => {
     const weeks = adapter.getWeekArray(month.value)
 
     const days = weeks.flat()
@@ -127,10 +127,10 @@ export function useCalendar (props: CalendarProps) {
       }
     }
 
-    return weeks as Date[][]
+    return weeks as unknown[][]
   })
 
-  function genDays (days: Date[], today: Date): CalendarDay[] {
+  function genDays (days: unknown[], today: unknown): CalendarDay[] {
     return days.filter(date => {
       return props.weekdays.includes(adapter.toJsDate(date).getDay())
     }).map((date, index) => {
@@ -168,16 +168,14 @@ export function useCalendar (props: CalendarProps) {
       week.push(adapter.addDays(lastDay, day))
     }
 
-    const days = week as Date[]
+    const today = adapter.date()
 
-    const today = adapter.date() as Date
-
-    return genDays(days, today)
+    return genDays(week, today)
   })
 
   const daysInMonth = computed(() => {
     const days = weeksInMonth.value.flat()
-    const today = adapter.date() as Date
+    const today = adapter.date()
 
     return genDays(days, today)
   })
